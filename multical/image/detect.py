@@ -1,3 +1,4 @@
+import os.path
 from functools import partial
 import os.path as path
 import cv2
@@ -13,7 +14,20 @@ from structs.struct import transpose_structs, struct, filter_none
 def load_image(filename):
   assert path.isfile(filename), f"load_image: file {filename} does not exist"
 
-  image = cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
+  raw_image = cv2.imread(filename, cv2.IMREAD_UNCHANGED)
+
+  # Handle images that are already mono, especially 12-bit tiffs that don't like loading
+  # as an IMREAD_GRAYSCALE in OpenCV
+  if len(raw_image.shape) == 2:
+    if np.issubdtype(raw_image.dtype, np.uint16):
+      image = (raw_image >> 8).astype('uint8')
+    elif np.issubdtype(raw_image.dtype, np.uint8):
+      image = raw_image
+    else:
+      assert(f"load_image: can only handle 8,12, or 16-bit tiffs! {filename}")
+  else:
+    image = cv2.cvtColor(raw_image, cv2.COLOR_BGR2GRAY)
+
   assert image is not None, f"load_image: could not read {filename}"
   return image
 
