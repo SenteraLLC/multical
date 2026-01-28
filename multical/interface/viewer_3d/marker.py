@@ -31,16 +31,15 @@ view_triangles = np.hstack([[3, 0, 2, 1], [3, 0, 3, 2], [3, 0, 4, 3], [3, 0, 1, 
 
 def projection_corners(camera, scale=1):
   return np.concatenate([
-      np.zeros((1, 3)),
+      np.zeros((1, 3), dtype=np.float32),
       view_projection(camera, size=scale)
   ])
 
 def axis_points(scale=1):
-  origin = [0, 0, 0]
+  origin = [0.0, 0.0, 0.0]
   corners = np.array([
-      origin, [1, 0, 0], origin, [0, 1, 0], origin, [0, 0, 1],
-    ]
-  )
+      origin, [1.0, 0.0, 0.0], origin, [0.0, 1.0, 0.0], origin, [0.0, 0.0, 1.0],
+    ], dtype=np.float32)
   return corners * scale
 
 def axis_marker(scale = 1):
